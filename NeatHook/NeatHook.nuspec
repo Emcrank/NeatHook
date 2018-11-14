@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>NeatHook</id>
+    <version>1.0.0</version>
+    <authors>Aaron Todd</authors>
+    <owners>Aaron Todd</owners>
+    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Wrapper for Global Key Hooks based on an example from Microsoft.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>Global key hook neat</tags>
+  </metadata>
+  <files>
+	<file src="bin\Release\NeatHook.dll"/>
+  </files>
+</package>
