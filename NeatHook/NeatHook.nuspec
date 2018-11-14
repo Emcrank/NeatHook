@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>NeatHook</id>
-    <version>1.0.0</version>
+    <version>{AssemblyInfoVersion}</version>
     <authors>Aaron Todd</authors>
     <owners>Aaron Todd</owners>
     <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
