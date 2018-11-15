@@ -36,7 +36,7 @@ namespace NeatHook
         /// <summary>
         /// Raise an event when the hotkey is pressed.
         /// </summary>
-        public event EventHandler HotKeyPressed;
+        public Action HotKeyPressed;
 
         internal KeyHook(IntPtr handle, int id, KeyModifiers modifiers, Keys key)
         {
@@ -73,8 +73,8 @@ namespace NeatHook
                && m.WParam == (IntPtr)Id
                && HotKeyPressed != null)
             {
-                // Raise the HotKeyPressed event if it is an WM_HOTKEY message.
-                HotKeyPressed(this, EventArgs.Empty);
+                // Raise the HotKeyPressed if it is an WM_HOTKEY message.
+                HotKeyPressed();
 
                 // True to filter the message and stop it from being dispatched.
                 return true;

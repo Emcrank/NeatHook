@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace NeatHook.Sandpit.WinForms
@@ -13,18 +14,21 @@ namespace NeatHook.Sandpit.WinForms
 
         private void HandleLoad(object sender, EventArgs e)
         {
+            //Explicit handler
             NeatHook.RegisterKey(new KeyHookOptions
             {
                 Handle = Handle,
                 Id = 1,
-                Handler = null,
+                Handler = () => MessageBox.Show("B Pressed"),
                 Key = Keys.K,
                 Modifiers = KeyModifiers.Control
             });
+            
+            //No explicit handler
             NeatHook.RegisterKey(new KeyHookOptions
             {
                 Handle = Handle,
-                Id = 1,
+                Id = 2,
                 Handler = null,
                 Key = Keys.M,
                 Modifiers = KeyModifiers.Control
@@ -35,7 +39,7 @@ namespace NeatHook.Sandpit.WinForms
 
         private void NeatHookOnHookedKeyPress(KeyPressEventArgs obj)
         {
-            MessageBox.Show($"{obj.Modifiers}+{obj.Key}");
+            Debug.WriteLine($"{obj.Modifiers}+{obj.Key}");
         }
     }
 }

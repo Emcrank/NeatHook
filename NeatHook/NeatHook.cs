@@ -6,12 +6,16 @@ namespace NeatHook
 {
     public sealed class NeatHook : IDisposable
     {
-        public IDictionary<int, KeyHook> KeyHooks { get; } = new Dictionary<int, KeyHook>();
-        private static readonly NeatHook instance = new NeatHook();
-        private bool disposing;
+        public IReadOnlyDictionary<int, KeyHook> KeyHooks => (IReadOnlyDictionary<int, KeyHook>)keyHooks;
 
+        private static readonly NeatHook instance = new NeatHook();
+        private readonly IDictionary<int, KeyHook> keyHooks = new Dictionary<int, KeyHook>();
+        private bool disposing;
         private bool registeredDispose;
 
+        /// <summary>
+        /// This event is fired when any hooked key which does not have an explicit handler set is pressed.
+        /// </summary>
         public static event Action<KeyPressEventArgs> OnHookedKeyPress;
 
         public static void FinalizeClass(object sender, EventArgs e)
@@ -20,18 +24,27 @@ namespace NeatHook
             Application.ApplicationExit -= FinalizeClass;
         }
 
+        /// <summary>
+        /// Registers a Key Hook
+        /// </summary>
+        /// <param name="options">
+        /// Options parameter containing the information required to register a key hook.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown in the attempt to register a key with an id that is already regiseted.
+        /// </exception>
         public static void RegisterKey(KeyHookOptions options)
         {
-            if(instance.KeyHooks.ContainsKey(options.Id))
+            if (instance.KeyHooks.ContainsKey(options.Id))
                 throw new InvalidOperationException("A key hook has already been defined with an Id of " + options.Id);
 
             var hook = new KeyHook(options.Handle, options.Id, options.Modifiers, options.Key);
-            hook.HotKeyPressed += (s, e) => KeyPressed(hook);
+            hook.HotKeyPressed = () => HookedKeyPress(hook);
 
             if (options.Handler != null)
-                hook.HotKeyPressed += (s, e) => options.Handler(s, e);
+                hook.HotKeyPressed = options.Handler;
 
-            instance.KeyHooks[options.Id] = hook;
+            instance.keyHooks[options.Id] = hook;
 
             if (instance.registeredDispose)
                 return;
@@ -40,6 +53,32 @@ namespace NeatHook
             RegisterDispose();
         }
 
+        /// <summary>
+        /// Unregisters a Key Hook.
+        /// </summary>
+        /// <param name="id">Id of the KeyHook to be unregistered.</param>
+        public static void UnregisterKey(int id)
+        {
+            if (!instance.KeyHooks.ContainsKey(id))
+                return;
+
+            var keyHook = instance.KeyHooks[id];
+            instance.keyHooks.Remove(id);
+            keyHook.Dispose();
+        }
+
+        /// <summary>
+        /// Unregisters a Key Hook.
+        /// </summary>
+        /// <param name="keyHook">KeyHook to be unregistered.</param>
+        public static void UnregisterKey(KeyHook keyHook)
+        {
+            UnregisterKey(keyHook.Id);
+        }
+
+        /// <summary>
+        /// Unregisteres all Key Hooks and releases resources.
+        /// </summary>
         public void Dispose()
         {
             if (disposing)
@@ -50,7 +89,7 @@ namespace NeatHook
                 key.Value.Dispose();
         }
 
-        private static void KeyPressed(KeyHook keyHook)
+        private static void HookedKeyPress(KeyHook keyHook)
         {
             OnHookedKeyPress?.Invoke(new KeyPressEventArgs { Key = keyHook.Key, Modifiers = keyHook.Modifiers });
         }
