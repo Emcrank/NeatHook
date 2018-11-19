@@ -8,6 +8,7 @@ namespace NeatHook.Sandpit.WinForms
     {
         public FormMain()
         {
+
             InitializeComponent();
             Load += HandleLoad;
         }
@@ -19,9 +20,13 @@ namespace NeatHook.Sandpit.WinForms
             {
                 Handle = Handle,
                 Id = 1,
-                Handler = () => MessageBox.Show("B Pressed"),
+                Handler = k =>
+                {
+                    Console.WriteLine("k");
+                    k.Unregister();
+                },
                 Key = Keys.K,
-                Modifiers = KeyModifiers.Control
+                Modifiers = KeyModifiers.None
             });
             
             //No explicit handler
@@ -37,7 +42,7 @@ namespace NeatHook.Sandpit.WinForms
             NeatHook.OnHookedKeyPress += NeatHookOnHookedKeyPress;
         }
 
-        private void NeatHookOnHookedKeyPress(KeyPressEventArgs obj)
+        private void NeatHookOnHookedKeyPress(object sender, KeyPressEventArgs obj)
         {
             Debug.WriteLine($"{obj.Modifiers}+{obj.Key}");
         }

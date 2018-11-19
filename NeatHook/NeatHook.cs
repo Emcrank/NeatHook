@@ -16,7 +16,7 @@ namespace NeatHook
         /// <summary>
         /// This event is fired when any hooked key which does not have an explicit handler set is pressed.
         /// </summary>
-        public static event Action<KeyPressEventArgs> OnHookedKeyPress;
+        public static event EventHandler<KeyPressEventArgs> OnHookedKeyPress;
 
         public static void FinalizeClass(object sender, EventArgs e)
         {
@@ -39,7 +39,7 @@ namespace NeatHook
                 throw new InvalidOperationException("A key hook has already been defined with an Id of " + options.Id);
 
             var hook = new KeyHook(options.Handle, options.Id, options.Modifiers, options.Key);
-            hook.HotKeyPressed = () => HookedKeyPress(hook);
+            hook.HotKeyPressed = k => HookedKeyPress(instance, hook);
 
             if (options.Handler != null)
                 hook.HotKeyPressed = options.Handler;
@@ -63,8 +63,8 @@ namespace NeatHook
                 return;
 
             var keyHook = instance.KeyHooks[id];
-            instance.keyHooks.Remove(id);
             keyHook.Dispose();
+            instance.keyHooks.Remove(id);
         }
 
         /// <summary>
@@ -89,9 +89,9 @@ namespace NeatHook
                 key.Value.Dispose();
         }
 
-        private static void HookedKeyPress(KeyHook keyHook)
+        private static void HookedKeyPress(NeatHook neatHook, KeyHook keyHook)
         {
-            OnHookedKeyPress?.Invoke(new KeyPressEventArgs { Key = keyHook.Key, Modifiers = keyHook.Modifiers });
+            OnHookedKeyPress?.Invoke(neatHook, new KeyPressEventArgs { Key = keyHook.Key, Modifiers = keyHook.Modifiers });
         }
 
         private static void RegisterDispose()
