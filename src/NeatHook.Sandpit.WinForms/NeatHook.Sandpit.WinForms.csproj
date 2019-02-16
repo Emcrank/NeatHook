@@ -80,11 +80,5 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NeatHook\NeatHook.csproj">
-      <Project>{9eac151c-71bb-4bbd-ad1b-a7a7ddb9eff1}</Project>
-      <Name>NeatHook</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
